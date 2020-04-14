@@ -1,13 +1,11 @@
 from tkinter import *
 import PIL
-from PIL import ImageTk
-from PIL import Image
-import sqlite3
-from tkinter import ttk
+import sqlite3 #For Storing Data
 
 root= Tk() #root window is created
 root.title('Coding Database') #Title name of the project
 root.geometry("450x650") #Size of application
+root.config(bg='red')
 conn = sqlite3.connect('coders.db') #To connect to sqlite3
 c = conn.cursor() #To get a cursor 
 c.execute(''' SELECT count(name) FROM sqlite_master WHERE type='table' AND name='ccdata' ''') #To check whether ccdata table exist then return 1 or 0
@@ -29,10 +27,11 @@ if c.fetchone()[0]!=1 : { #IF count!=1 will create a new table
         atco_rat integer
         )""")       
 }
+#This our edit function in which we values are updated
 def edit():
     conn = sqlite3.connect('coders.db')
     c = conn.cursor()
-    record_id=update_box.get()
+    record_id=update_box.get() #Will return value of update_box
     c.execute("""UPDATE ccdata SET
         first_name= :first,
         last_name= :last,
@@ -67,9 +66,10 @@ def edit():
         })
     conn.commit()
     conn.close()
-    amd.destroy()
+    amd.destroy()#Will close the screen
     upd.destroy()
 
+#This is the function for taking input from the user while updating values(updated values)
 def update_now():
     global amd
     amd=Tk()
@@ -123,6 +123,7 @@ def update_now():
     atco_id_upd.grid(row=14, column=1, padx=40, pady=(10,0))
     atco_rat_upd= Entry(amd, width=30)
     atco_rat_upd.grid(row=15, column=1, padx=40, pady=(10,0))
+    
     #To Create Text Box Labels
     f_name_upd_label= Label(amd,text="First Name")
     f_name_upd_label.grid(row=2, column=0, pady=(10,0))
@@ -169,28 +170,31 @@ def update_now():
         cc_rat_upd.insert(0, record[11])
         atco_id_upd.insert(0, record[12])
         atco_rat_upd.insert(0, record[13])
+    
     #Create a save button
     update_btn= Button(amd,text="Save Update",command=edit)
     update_btn.grid(row=16,column=0,columnspan=2,pady=10,padx=10,ipadx=135)
     conn.commit()
     conn.close()
 
+#The main update function which takes id as an input
 def update():
     global upd
     upd= Tk()
+    upd.config(bg='blue')   
     upd.title('Update Page')
     upd.geometry("400x300")
     conn = sqlite3.connect('coders.db')
     c = conn.cursor() 
     global update_box 
-    update_box= Entry(upd)
+    update_box= Entry(upd)#User is asked to Enter id number to be updated
     update_box.grid(row=0,column=1,padx=10,pady=10)
     update_box_label=Label(upd,text="Enter Id Number")
     update_box_label.grid(row=0,column=0,padx=10,pady=10)
     update_button= Button(upd,text="Update Customer",command=update_now)
     update_button.grid(row=1,column=0,ipadx=10)
     
-
+#To create a new record
 def add():
     conn = sqlite3.connect('coders.db')
     c = conn.cursor()
@@ -209,9 +213,10 @@ def add():
             'cc_rat': cc_rat.get(),
             'atco_id': atco_id.get(),
             'atco_rat': atco_rat.get()
-        })
+        })#Values are inserted in the table
     conn.commit()
     conn.close()
+
     #Clear the Text Boxes
     f_name.delete(0, END)
     l_name.delete(0, END)
@@ -228,17 +233,18 @@ def add():
     atco_id.delete(0, END)
     atco_rat.delete(0, END)
 
+#To view the table with content
 def query():
     ad=Tk()
-    ad.geometry("1500x300")
+    ad.geometry("1500x300")#To set the dimension of screen
     conn = sqlite3.connect('coders.db')
     c = conn.cursor()
     ad.title("Display Page")
     label=Label(ad, text="Coding Database Table\n\n", font=("Arial",15)).grid(row=0,column=0,columnspan=3)
     #Query the database
-    c.execute("SELECT oid,* FROM ccdata")
+    c.execute("SELECT oid,* FROM ccdata")#Selects all data from ccdata
     records=c.fetchall()
-    #Loop through Result
+    #Headings of the table
     lookup_label=Label(ad, text="ID")
     lookup_label.grid(row=0,column=0,pady=(10,0))
     lookup_label=Label(ad, text="First Name")
@@ -270,11 +276,13 @@ def query():
     lookup_label=Label(ad, text="Atcoder Rank")
     lookup_label.grid(row=0,column=14,pady=(10,0))
     lookup_label=Label(ad, text="")
+    
+    #Printing of Data
     for index,record in enumerate(records):
         num=0
         for i in record:
             if i=='':
-                lookup_label=Label(ad, text="NULL")
+                lookup_label=Label(ad, text="NULL")#If user has entered then will store NULL value
                 lookup_label.grid(row=index+1,column=num,pady=(10,0))
             else :
                 lookup_label=Label(ad, text=i)
@@ -283,6 +291,7 @@ def query():
     conn.commit()
     conn.close()
 def clear():
+    #To clear all input boxes
     f_name.delete(0, END)
     l_name.delete(0, END)
     phnumber.delete(0, END)
@@ -298,19 +307,21 @@ def clear():
     atco_id.delete(0, END)
     atco_rat.delete(0, END)
 
+#For searching a Coder by First Name
 def search():
     ad=Tk()
     ad.geometry("500x300")
     conn = sqlite3.connect('coders.db')
     c = conn.cursor()
     ad.title("Search Page")
+    ad.config(bg='blue')
     def search_now():
         md=Tk()
         md.geometry("1500x300")
         md.title("Output Page")
         conn = sqlite3.connect('coders.db')
         c = conn.cursor()
-        searched= search_box.get()
+        searched= search_box.get()#Will get name from here
         c.execute("SELECT oid,* FROM ccdata")
         records=c.fetchall()
         s=0
@@ -346,7 +357,7 @@ def search():
         lookup_label.grid(row=0,column=14,pady=(10,0))
         lookup_label=Label(md, text="")
         for index,record in enumerate(records):
-            if record[1]==searched:
+            if record[1]==searched: #If name comes equal to input name then will print it
                 num=0
                 s+=1
                 for i in record:
@@ -371,21 +382,23 @@ def search():
     conn.commit()
     conn.close()
 
+#For deleting a record
 def delete():
     ad=Tk()
     ad.title("Delete Page")
+    ad.config(bg='blue')
     ad.geometry("300x100")
     conn = sqlite3.connect('coders.db')
     c = conn.cursor()
     def delete_now():
         conn = sqlite3.connect('coders.db')
         c = conn.cursor()
-        c.execute("DELETE from ccdata WHERE oid=" + delete_box.get())
+        c.execute("DELETE from ccdata WHERE oid=" + delete_box.get())# Compare delete id
         delete_box.delete(0, END)
         conn.commit()
         conn.close()
         ad.destroy()
-    delete_box= Entry(ad)
+    delete_box= Entry(ad)#Delete id asked from user
     delete_box.grid(row=0,column=1,padx=10,pady=10)
     delete_box_label=Label(ad,text="Enter Id Number")
     delete_box_label.grid(row=0,column=0,padx=10,pady=10)
@@ -394,6 +407,7 @@ def delete():
     conn.commit()
     conn.close()
 
+label=Label(root, text="Coding Database System", font=("Arial",18)).grid(row=0,column=0,columnspan=3)
 #To Create Text Boxes
 f_name= Entry(root, width=30)
 f_name.grid(row=2, column=1,  pady=(10,0))
@@ -453,28 +467,34 @@ atco_id_label.grid(row=14, column=0, pady=(10,0))
 atco_rat_label= Label(root,text="Atcoder Rating")
 atco_rat_label.grid(row=15, column=0, pady=(10,0))
 
-#Create Submit Button
+#Create Add Button
 submit_btn= Button(root,text="Add Record to Database", command=add)
 submit_btn.grid(row=16, column=0, pady=10)
 
+#Create Display Button
 query_btn= Button(root,text="Display Record",command=query)
 query_btn.grid(row=16, column=2,pady=10)
 
+#Create Search Button
 searc_btn= Button(root,text="Search the Entry", command=search)
 searc_btn.grid(row=17,column=0, pady=10)
 
+#Create Delete Button
 delete_btn= Button(root,text="Delete Entry", command=delete)
 delete_btn.grid(row=17,column=2,pady=10)
 
+#Create Update Button
 update_btn= Button(root,text="Update the Record",command=update)
 update_btn.grid(row=18,column=0,pady=10)
 
-
+#Create Clear Button
 clear_btn= Button(root,text="Clear the Record",command=clear)
 clear_btn.grid(row=18,column=2,pady=10)
 
+#Create Exit Button
 button_quit= Button(root,text="Exit Program",command=root.quit)
 button_quit.grid(row=17,column=1)
 
+conn.commit()
 conn.close()
 root.mainloop()
