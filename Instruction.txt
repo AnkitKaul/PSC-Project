@@ -1,0 +1,10 @@
+Instructions to run the Code:
+
+1) import packages: tk(tkinter),pillow(PIL),sqlite(sqlite3)
+2) Then can copy the code into your respective platform like JupyterLab, Notebok, VS Code
+3) Then you can run the code and it will create a table ccdata
+4) Then there we have options like Add a record, Display a record, Delete a record, Search a Record, Clear the input fields, Update any record or exit.
+5) It is a storing database so all entries will be saved in the table until not deleted.
+6) Then you can choose any option to execute that task.
+7) And at last click on "Exit the Program" to exit the current database.
+
